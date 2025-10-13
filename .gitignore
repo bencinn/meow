@@ -2,3 +2,5 @@ y.tab.*
 lex.yy.c
 minimal.json.o
 main
+out
+out.sb3

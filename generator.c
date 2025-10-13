@@ -27,26 +27,39 @@ void write_start_of_json(FILE *f) {
   char *ptr = (char *)&_binary_minimal_json_start;
   while (ptr != &_binary_minimal_json_start + 501) {
     fputc(*ptr, f);
+    putchar(*ptr);
     ptr++;
   }
+  putchar('\n');
 }
 void write_middle_of_json(FILE *f) {
   char *ptr = (char *)&_binary_minimal_json_start + 501;
-  while (ptr != &_binary_minimal_json_start + 540 + 1) {
+  while (ptr != &_binary_minimal_json_start + 540) {
     fputc(*ptr, f);
+    putchar(*ptr);
     ptr++;
   }
+  putchar('\n');
 }
 void write_end_of_json(FILE *f) {
-  char *ptr = (char *)&_binary_minimal_json_start + 540 + 1;
+  char *ptr = (char *)&_binary_minimal_json_start + 540;
   while (ptr != &_binary_minimal_json_end) {
     fputc(*ptr, f);
+    putchar(*ptr);
     ptr++;
   }
+  putchar('\n');
 }
 
-char *start = "\"meow_start\":{\"opcode\":\"event_whenflagclicked\",\"next\":"
-              "null,\"parent\":null,\"inputs\":{},\"fields\":{},\"shadow\":"
-              "false,\"topLevel\":true,\"x\":262,\"y\":228}";
+char *start = "\"opcode\":\"event_whenflagclicked\",\"next\":null,\"parent\":"
+              "null,\"inputs\":{},\"fields\":{},\"shadow\":false,\"topLevel\":"
+              "true,\"x\":0,\"y\":0";
 
-void write_start(FILE *f) { fputs(start, f); }
+void write_start(FILE *f) {
+  char* random_id = malloc(28 + 1);
+  rand_str(random_id, 28);
+  fprintf(f, "\"%s\":", random_id);
+  fputc('{', f);
+  fputs(start, f);
+  fputc('}', f);
+}

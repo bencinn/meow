@@ -76,7 +76,9 @@ int main(int argc, char **argv)
 
 	Jim variables = {};
 	jim_object_begin(&variables);
-	generate_variable_int(&variables, 12, "test var");
+	char *random_buf = create_random_buffer();
+	generate_variable_int(&variables, 12, "test var", random_buf);
+	free(random_buf);
 	jim_object_end(&variables);
 
 	// TODO: this is probably safe (?) but in case fseek fail how the fuck
@@ -90,9 +92,13 @@ int main(int argc, char **argv)
 	Jim opcodes = {};
 	jim_object_begin(&opcodes);
 
-	write_start(&opcodes);
-	write_start(&opcodes);
-
+	{
+		char *random_id_1 = create_random_buffer();
+		char *random_id_2 = create_random_buffer();
+		write_start(&opcodes, random_id_1, random_id_2);
+		write_blocks(&opcodes, NULL, random_id_2, random_id_1, NULL);
+		free(random_id_1);
+	}
 	jim_object_end(&opcodes);
 
 	fseek(project_json, -1, SEEK_CUR);

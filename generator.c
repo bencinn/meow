@@ -1,4 +1,5 @@
-// #include "log.h"
+#include "ast.h"
+#include "log.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,6 +18,13 @@ void rand_str(char *dest, size_t length)
 		*dest++ = charset[index];
 	}
 	*dest = '\0';
+}
+
+char *create_random_buffer()
+{
+	char *buf = malloc(sizeof(char) * (28 + 1));
+	rand_str(buf, 28);
+	return buf;
 }
 
 // $ nm minify.o
@@ -52,54 +60,71 @@ void write_end_of_json(FILE *f)
 	}
 }
 
-char *start = "\"opcode\":\"event_whenflagclicked\",\"next\":null,\"parent\":"
-	      "null,\"inputs\":{},\"fields\":{},\"shadow\":false,\"topLevel\":"
-	      "true,\"x\":0,\"y\":0";
-
-void write_start(Jim *j)
+void write_start(Jim *j, char *random_id, char *next_id)
 {
-	char *random_id = malloc(sizeof(char) * (28 + 1));
-	rand_str(random_id, 28);
 	jim_member_key(j, random_id);
-	free(random_id);
+
 	jim_object_begin(j);
 	{
 		jim_member_key(j, "opcode");
 		jim_string(j, "event_whenflagclicked");
 
 		jim_member_key(j, "next");
-		jim_null(j);
+		if (next_id == NULL)
+			jim_null(j);
+		else
+			jim_string(j, next_id);
 
-		jim_member_key(j, "parent");
-		jim_null(j);
+		// jim_member_key(j, "parent");
+		// jim_null(j);
 
-		jim_member_key(j, "inputs");
-		jim_object_begin(j);
-		jim_object_end(j);
+		// jim_member_key(j, "inputs");
+		// jim_object_begin(j);
+		// jim_object_end(j);
 
-		jim_member_key(j, "fields");
-		jim_object_begin(j);
-		jim_object_end(j);
+		// jim_member_key(j, "fields");
+		// jim_object_begin(j);
+		// jim_object_end(j);
 
-		jim_member_key(j, "shadow");
-		jim_bool(j, false);
+		// jim_member_key(j, "shadow");
+		// jim_bool(j, false);
 
 		jim_member_key(j, "topLevel");
 		jim_bool(j, true);
 
-		jim_member_key(j, "x");
-		jim_integer(j, 0);
+		// jim_member_key(j, "x");
+		// jim_integer(j, 0);
 
-		jim_member_key(j, "y");
-		jim_integer(j, 0);
+		// jim_member_key(j, "y");
+		// jim_integer(j, 0);
 	}
 	jim_object_end(j);
 }
 
-void generate_variable_int(Jim *j, int n, char *name)
+void write_blocks(Jim *j, NODE *n, char *new_id, char *prev_id, char *next_id)
 {
-	char *random_id = malloc(sizeof(char) * (28 + 1));
-	rand_str(random_id, 28);
+	jim_member_key(j, new_id);
+	jim_object_begin(j);
+	{
+		jim_member_key(j, "opcode");
+		jim_string(j, "control_delete_this_clone");
+		jim_member_key(j, "topLevel");
+		jim_bool(j, false);
+
+		jim_member_key(j, "next");
+		if (next_id == NULL)
+			jim_null(j);
+		else
+			jim_string(j, next_id);
+
+		jim_member_key(j, "parent");
+		jim_string(j, prev_id);
+	}
+	jim_object_end(j);
+}
+
+void generate_variable_int(Jim *j, int n, char *name, char *random_id)
+{
 	jim_member_key(j, random_id);
 	{
 		jim_array_begin(j);
@@ -111,10 +136,8 @@ void generate_variable_int(Jim *j, int n, char *name)
 	}
 }
 
-void generate_random_str(Jim *j, char *val, char *name)
+void generate_variable_str(Jim *j, char *val, char *name, char *random_id)
 {
-	char *random_id = malloc(sizeof(char) * (28 + 1));
-	rand_str(random_id, 28);
 	jim_member_key(j, random_id);
 	{
 		jim_array_begin(j);

@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 	fseek(project_json, -1, SEEK_CUR);
 
 	write_middle_of_json(project_json);
-    Jim opcodes = {};
+	Jim opcodes = {};
 	jim_object_begin(&opcodes);
 
 	write_start(&opcodes);
@@ -95,9 +95,9 @@ int main(int argc, char **argv)
 
 	jim_object_end(&opcodes);
 
-    fseek(project_json, -1, SEEK_CUR);
+	fseek(project_json, -1, SEEK_CUR);
 	fwrite(opcodes.sink, opcodes.sink_count, 1, project_json);
-    fseek(project_json, -1, SEEK_CUR);
+	fseek(project_json, -1, SEEK_CUR);
 
 	write_end_of_json(project_json);
 

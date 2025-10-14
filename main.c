@@ -73,10 +73,32 @@ int main(int argc, char **argv)
 	}
 
 	write_start_of_json(project_json);
+
+	Jim variables = {};
+	jim_object_begin(&variables);
+	generate_variable_int(&variables, 12, "test var");
+	jim_object_end(&variables);
+
+	// TODO: this is probably safe (?) but in case fseek fail how the fuck
+	// will we recover anyways. maybe i should just crash and don't care but
+	// maybe idk
+	fseek(project_json, -1, SEEK_CUR);
+	fwrite(variables.sink, variables.sink_count, 1, project_json);
+	fseek(project_json, -1, SEEK_CUR);
+
 	write_middle_of_json(project_json);
-	write_start(project_json);
-	putc(',', project_json);
-	write_start(project_json);
+    Jim opcodes = {};
+	jim_object_begin(&opcodes);
+
+	write_start(&opcodes);
+	write_start(&opcodes);
+
+	jim_object_end(&opcodes);
+
+    fseek(project_json, -1, SEEK_CUR);
+	fwrite(opcodes.sink, opcodes.sink_count, 1, project_json);
+    fseek(project_json, -1, SEEK_CUR);
+
 	write_end_of_json(project_json);
 
 	fclose(project_json);

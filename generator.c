@@ -1,6 +1,9 @@
-#include "log.h"
+// #include "log.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+#define JIM_IMPLEMENTATION
+#include "jim2.h"
 
 // https://stackoverflow.com/a/15768317
 void rand_str(char *dest, size_t length)
@@ -53,13 +56,72 @@ char *start = "\"opcode\":\"event_whenflagclicked\",\"next\":null,\"parent\":"
 	      "null,\"inputs\":{},\"fields\":{},\"shadow\":false,\"topLevel\":"
 	      "true,\"x\":0,\"y\":0";
 
-void write_start(FILE *f)
+void write_start(Jim *j)
 {
-	char *random_id = malloc(28 + 1);
+	char *random_id = malloc(sizeof(char) * (28 + 1));
 	rand_str(random_id, 28);
-	fprintf(f, "\"%s\":", random_id);
-	fputc('{', f);
-	fputs(start, f);
-	fputc('}', f);
+	jim_member_key(j, random_id);
 	free(random_id);
+	jim_object_begin(j);
+	{
+		jim_member_key(j, "opcode");
+		jim_string(j, "event_whenflagclicked");
+
+		jim_member_key(j, "next");
+		jim_null(j);
+
+		jim_member_key(j, "parent");
+		jim_null(j);
+
+		jim_member_key(j, "inputs");
+		jim_object_begin(j);
+		jim_object_end(j);
+
+		jim_member_key(j, "fields");
+		jim_object_begin(j);
+		jim_object_end(j);
+
+		jim_member_key(j, "shadow");
+		jim_bool(j, false);
+
+		jim_member_key(j, "topLevel");
+		jim_bool(j, true);
+
+		jim_member_key(j, "x");
+		jim_integer(j, 0);
+
+		jim_member_key(j, "y");
+		jim_integer(j, 0);
+	}
+	jim_object_end(j);
+}
+
+void generate_variable_int(Jim *j, int n, char *name)
+{
+	char *random_id = malloc(sizeof(char) * (28 + 1));
+	rand_str(random_id, 28);
+	jim_member_key(j, random_id);
+	{
+		jim_array_begin(j);
+		{
+			jim_string(j, name);
+			jim_integer(j, n);
+		}
+		jim_array_end(j);
+	}
+}
+
+void generate_random_str(Jim *j, char *val, char *name)
+{
+	char *random_id = malloc(sizeof(char) * (28 + 1));
+	rand_str(random_id, 28);
+	jim_member_key(j, random_id);
+	{
+		jim_array_begin(j);
+		{
+			jim_string(j, name);
+			jim_string(j, val);
+		}
+		jim_array_end(j);
+	}
 }

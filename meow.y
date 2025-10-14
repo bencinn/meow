@@ -9,16 +9,14 @@ void yyerror(char *);
 NODE* n_const_int(int n);
 NODE* n_expr(NODE* left, NODE* right, EXPRTYPE e);
 
-%}
+extern NODE* final;
 
-%code requires {
-    #include "ast.h"
-}
+%}
 
 %union {
     int num;
     char* text;
-	NODE* n;
+	struct I_NODE* n;
 }
 %token <num> INTEGER
 %token<text> IDENT
@@ -48,6 +46,8 @@ NODE* n_expr(NODE* left, NODE* right, EXPRTYPE e);
 %type<n> expr stmt stmt_list 
 
 %%
+program:
+	   stmt_list { final = $1; }
 
 stmt_list:
 		 stmt { $$ = $1; }

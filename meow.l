@@ -4,6 +4,7 @@ letter [a-z]
 %{
 
 #include "log.h"
+#include "ast.h"
 #include "y.tab.h"
 
 void yyerror(char* c);

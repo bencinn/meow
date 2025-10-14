@@ -20,39 +20,33 @@ void rand_str(char *dest, size_t length)
 // 00000000000004c4 D _binary_minimal_json_end
 // 00000000000004c4 A _binary_minimal_json_size
 // 0000000000000000 D _binary_minimal_json_start
-extern const char _binary_minimal_json_start;
 extern const char _binary_minimal_json_end;
 extern const char _binary_minimal_json_size;
+extern const char _binary_minimal_json_start;
 
 void write_start_of_json(FILE *f)
 {
 	char *ptr = (char *)&_binary_minimal_json_start;
 	while (ptr != &_binary_minimal_json_start + 501) {
 		fputc(*ptr, f);
-		putchar(*ptr);
 		ptr++;
 	}
-	putchar('\n');
 }
 void write_middle_of_json(FILE *f)
 {
 	char *ptr = (char *)&_binary_minimal_json_start + 501;
 	while (ptr != &_binary_minimal_json_start + 540) {
 		fputc(*ptr, f);
-		putchar(*ptr);
 		ptr++;
 	}
-	putchar('\n');
 }
 void write_end_of_json(FILE *f)
 {
 	char *ptr = (char *)&_binary_minimal_json_start + 540;
 	while (ptr != &_binary_minimal_json_end) {
 		fputc(*ptr, f);
-		putchar(*ptr);
 		ptr++;
 	}
-	putchar('\n');
 }
 
 char *start = "\"opcode\":\"event_whenflagclicked\",\"next\":null,\"parent\":"
@@ -67,4 +61,5 @@ void write_start(FILE *f)
 	fputc('{', f);
 	fputs(start, f);
 	fputc('}', f);
+	free(random_id);
 }

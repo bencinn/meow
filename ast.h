@@ -1,6 +1,5 @@
 #ifndef AST_H
 #define AST_H
-
 typedef enum { CONST_N, EXPR_N, PRINT_N } NODETYPE;
 
 typedef enum { E_PLUS, E_MINUS, E_DIV, E_MULT, E_PRINT, E_NEXT } EXPRTYPE;

@@ -1,6 +1,6 @@
 y.tab.*
 lex.yy.c
-minimal.json.o
+minimal.o
 main
 out
 out.sb3

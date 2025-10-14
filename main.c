@@ -41,6 +41,8 @@ int main(int argc, char **argv)
 	fclose(f);
 	log_trace("closed file %s", argv[1]);
 
+	log_debug("final: %p", final);
+
 	// since Scratch require (?) the assetId to be the md5sum, but doesn't
 	// require the asset file to be valid, we just do $ md5sum <empty file>
 	// and Scratch 3 will load it, and display a question mark because wtf

@@ -3,6 +3,8 @@ a minimal (?) compiler (??) that compile to scratch.
 
 ## the scratch instruction
 refer to https://github.com/scratchfoundation/scratch-parser/blob/0f3a10d9cf363c410b924aaeff1ea6a7a346f6a1/lib/sb3_definitions.json
+
+### opcodes
 ```json
 {
   "num_primitive": {
@@ -136,4 +138,44 @@ when we do block and need inputs, the schema is like this:
 so, we can do (maybe) something like:
 ```json
 [2, [4, "16"]]
+```
+
+### declaring variable
+```json
+"variables": {
+    "type": "object",
+    "additionalProperties": {"$ref":"#/definitions/scalar_variable"}
+},
+"scalar_variable": {
+    "type": "array",
+    "items": [
+        {"type": "string", "description": "name of the variable"},
+        {"$ref":"#/definitions/scalarVal", "description": "value of the variable"}
+    ],
+    "additionalItems": {"type": "boolean", "enum": [true], "description": "Whether this is a cloud variable"},
+    "maxItems": 3
+}
+```
+we don't really care about cloud variable so we can just skip that. we do care about scalarval though.
+
+```json
+"stringOrNumber": {
+    "oneOf": [
+        {"type": "string"},
+        {"type": "number"}
+    ]
+},
+"scalarVal": {
+    "oneOf": [
+        {"$ref":"#/definitions/stringOrNumber"},
+        {"type": "boolean"}
+    ]
+}
+```
+
+the end result is:
+```json
+"variables": {
+    'randomId': ["actual variable name", 12]
+}
 ```

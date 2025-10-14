@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 
 	write_start_of_json(project_json);
 
-	Jim variables = {};
+	Jim variables = {0};
 	jim_object_begin(&variables);
 	char *random_buf = create_random_buffer();
 	generate_variable_int(&variables, 12, "test var", random_buf);
@@ -89,15 +89,25 @@ int main(int argc, char **argv)
 	fseek(project_json, -1, SEEK_CUR);
 
 	write_middle_of_json(project_json);
-	Jim opcodes = {};
+	Jim opcodes = {0};
 	jim_object_begin(&opcodes);
 
 	{
-		char *random_id_1 = create_random_buffer();
-		char *random_id_2 = create_random_buffer();
-		write_start(&opcodes, random_id_1, random_id_2);
-		write_blocks(&opcodes, NULL, random_id_2, random_id_1, NULL);
-		free(random_id_1);
+		char *random_id_start = create_random_buffer();
+		char *random_blk = create_random_buffer();
+		char *random_blk2 = create_random_buffer();
+		char *random_blk3 = create_random_buffer();
+		write_start(&opcodes, random_id_start, random_blk);
+		ScratchArgs sc[1] = {0};
+		sc[0].t = STR;
+		sc[0].u.string = "yo";
+		sc[0].name = "MESSAGE";
+		write_block(&opcodes, "looks_show", random_blk, random_id_start,
+			    random_blk2, NULL, 0);
+		write_block(&opcodes, "looks_say", random_blk2, random_blk,
+			    NULL, sc, 1);
+
+		free(random_id_start);
 	}
 	jim_object_end(&opcodes);
 

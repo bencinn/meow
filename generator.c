@@ -1,3 +1,4 @@
+#include "generator.h"
 #include "ast.h"
 #include "log.h"
 #include <stdio.h>
@@ -101,13 +102,14 @@ void write_start(Jim *j, char *random_id, char *next_id)
 	jim_object_end(j);
 }
 
-void write_blocks(Jim *j, NODE *n, char *new_id, char *prev_id, char *next_id)
+void write_block(Jim *j, char *opcode, char *new_id, char *prev_id,
+		 char *next_id, ScratchArgs *sc, int args_count)
 {
 	jim_member_key(j, new_id);
 	jim_object_begin(j);
 	{
 		jim_member_key(j, "opcode");
-		jim_string(j, "control_delete_this_clone");
+		jim_string(j, opcode);
 		jim_member_key(j, "topLevel");
 		jim_bool(j, false);
 
@@ -119,6 +121,44 @@ void write_blocks(Jim *j, NODE *n, char *new_id, char *prev_id, char *next_id)
 
 		jim_member_key(j, "parent");
 		jim_string(j, prev_id);
+
+		jim_member_key(j, "inputs");
+		jim_object_begin(j);
+		for (int i = 0; i < args_count; i++) {
+			jim_member_key(j, sc[i].name);
+			jim_array_begin(j);
+
+			jim_integer(j, 1);
+			jim_array_begin(j);
+			{
+				switch (sc[i].t) {
+				case STR:
+					jim_integer(j, 10);
+					jim_string(j, sc[i].u.string);
+				default:
+					log_error("ICE: argument type %d is "
+						  "not implemented",
+						  sc[i].t);
+					break;
+				}
+			}
+			jim_array_end(j);
+			jim_array_end(j);
+		}
+		// {
+		// 	jim_member_key(j, "MESSAGE");
+		// 	jim_array_begin(j);
+		// 	{
+		// 		jim_integer(j, 3);
+
+		// 		jim_array_begin(j);
+		// 		jim_integer(j, 10);
+		// 		jim_string(j, "yo");
+		// 		jim_array_end(j);
+		// 	}
+		// 	jim_array_end(j);
+		// }
+		jim_object_end(j);
 	}
 	jim_object_end(j);
 }

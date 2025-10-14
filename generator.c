@@ -16,34 +16,34 @@ void rand_str(char *dest, size_t length)
 	*dest = '\0';
 }
 
-// $ nm minimal.json.o
-// 00000000000004c4 D _binary_minimal_json_end
-// 00000000000004c4 A _binary_minimal_json_size
-// 0000000000000000 D _binary_minimal_json_start
-extern const char _binary_minimal_json_end;
-extern const char _binary_minimal_json_size;
-extern const char _binary_minimal_json_start;
+// $ nm minify.o
+// 00000000000003ff D _binary_minify_json_end
+// 00000000000003ff A _binary_minify_json_size
+// 0000000000000000 D _binary_minify_json_start
+extern const char _binary_minify_json_end;
+extern const char _binary_minify_json_size;
+extern const char _binary_minify_json_start;
 
 void write_start_of_json(FILE *f)
 {
-	char *ptr = (char *)&_binary_minimal_json_start;
-	while (ptr != &_binary_minimal_json_start + 501) {
+	char *ptr = (char *)&_binary_minify_json_start;
+	while (ptr != &_binary_minify_json_start + 501) {
 		fputc(*ptr, f);
 		ptr++;
 	}
 }
 void write_middle_of_json(FILE *f)
 {
-	char *ptr = (char *)&_binary_minimal_json_start + 501;
-	while (ptr != &_binary_minimal_json_start + 540) {
+	char *ptr = (char *)&_binary_minify_json_start + 501;
+	while (ptr != &_binary_minify_json_start + 540) {
 		fputc(*ptr, f);
 		ptr++;
 	}
 }
 void write_end_of_json(FILE *f)
 {
-	char *ptr = (char *)&_binary_minimal_json_start + 540;
-	while (ptr != &_binary_minimal_json_end) {
+	char *ptr = (char *)&_binary_minify_json_start + 540;
+	while (ptr != &_binary_minify_json_end) {
 		fputc(*ptr, f);
 		ptr++;
 	}

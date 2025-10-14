@@ -12,69 +12,74 @@ extern FILE *yyin;
 
 NODE *final;
 
-int main(int argc, char **argv) {
-  if (argc != 3) {
-    printf("Usage: %s <INPUT> <OUTPUT>\n", argv[0]);
-    return 1;
-  }
+int main(int argc, char **argv)
+{
+	if (argc != 3) {
+		printf("Usage: %s <INPUT> <OUTPUT>\n", argv[0]);
+		return 1;
+	}
 
-  log_trace("opening file %s", argv[1]);
-  FILE *f = fopen(argv[1], "r");
-  if (f == NULL) {
-    log_error("failed to open file %s", argv[1]);
-    return 1;
-  }
+	log_trace("opening file %s", argv[1]);
+	FILE *f = fopen(argv[1], "r");
+	if (f == NULL) {
+		log_error("failed to open file %s", argv[1]);
+		return 1;
+	}
 
-  log_trace("opening folder %s", argv[2]);
-  DIR *dir = opendir(argv[2]);
-  if (dir) {
-  } else if (ENOENT == errno) {
-    log_error("path %s is not a folder, exiting...", argv[2]);
-  } else {
-    log_error("failed to open folder %s", argv[2]);
-  }
+	log_trace("opening folder %s", argv[2]);
+	DIR *dir = opendir(argv[2]);
+	if (dir) {
+	} else if (ENOENT == errno) {
+		log_error("path %s is not a folder, exiting...", argv[2]);
+	} else {
+		log_error("failed to open folder %s", argv[2]);
+	}
 
-  yyin = f;
-  yyparse();
+	yyin = f;
+	yyparse();
 
-  fclose(f);
-  log_trace("closed file %s", argv[1]);
+	fclose(f);
+	log_trace("closed file %s", argv[1]);
 
-  // since Scratch require (?) the assetId to be the md5sum, but doesn't require
-  // the asset file to be valid, we just do $ md5sum <empty file> and Scratch 3
-  // will load it, and display a question mark because wtf did we just do
-  char *png_path = malloc(sizeof(argv[2]) + sizeof("/68b329da9893e34099c7d8ad5cb9c940.png"));
+	// since Scratch require (?) the assetId to be the md5sum, but doesn't
+	// require the asset file to be valid, we just do $ md5sum <empty file>
+	// and Scratch 3 will load it, and display a question mark because wtf
+	// did we just do
+	char *png_path = malloc(
+	    sizeof(argv[2]) + sizeof("/68b329da9893e34099c7d8ad5cb9c940.png"));
 
-  sprintf(png_path, "%s/68b329da9893e34099c7d8ad5cb9c940.png", argv[2]);
-  FILE *png = fopen(png_path, "w");
+	sprintf(png_path, "%s/68b329da9893e34099c7d8ad5cb9c940.png", argv[2]);
+	FILE *png = fopen(png_path, "w");
 
-  if (png == NULL) {
-    log_error("failed to open <empty>.png at %s", png_path);
-    return 1;
-  }
+	if (png == NULL) {
+		log_error("failed to open <empty>.png at %s", png_path);
+		return 1;
+	}
 
-  fclose(png);
-  log_trace("closed file %s", png_path);
+	fclose(png);
+	log_trace("closed file %s", png_path);
 
-  char *project_json_path = malloc(sizeof(argv[2]) + sizeof("/project.json"));
-  sprintf(project_json_path, "%s/project.json", argv[2]);
+	char *project_json_path =
+	    malloc(sizeof(argv[2]) + sizeof("/project.json"));
+	sprintf(project_json_path, "%s/project.json", argv[2]);
 
-  FILE *project_json = fopen(project_json_path, "w");
-  if (project_json == NULL) {
-    log_error("failed to open project.json at %s", project_json_path);
-    return 1;
-  }
+	FILE *project_json = fopen(project_json_path, "w");
+	if (project_json == NULL) {
+		log_error("failed to open project.json at %s",
+			  project_json_path);
+		return 1;
+	}
 
-  write_start_of_json(project_json);
-  write_middle_of_json(project_json);
-  write_start(project_json);
-  putc(',', project_json);
-  write_start(project_json);
-  write_end_of_json(project_json);
+	write_start_of_json(project_json);
+	write_middle_of_json(project_json);
+	write_start(project_json);
+	putc(',', project_json);
+	write_start(project_json);
+	write_end_of_json(project_json);
 
-  fclose(project_json);
-  log_trace("closed file %s", project_json_path);
+	fclose(project_json);
+	log_trace("closed file %s", project_json_path);
 
-  closedir(dir);
-  log_trace("closed folder %s", argv[2]);
+	closedir(dir);
+	log_trace("closed folder %s", argv[2]);
 }

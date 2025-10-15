@@ -6,11 +6,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define bp asm("int $3")
+
 extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
 
-NODE *final;
+STMT *final;
 
 int main(int argc, char **argv)
 {
@@ -94,10 +96,9 @@ int main(int argc, char **argv)
 
 	{
 		char *random_id_start = create_random_buffer();
-		char *random_blk = create_random_buffer();
-		char *random_blk2 = create_random_buffer();
-		char *random_blk3 = create_random_buffer();
-		write_start(&opcodes, random_id_start, random_blk);
+		// char *random_id_next = create_random_buffer();
+		write_start(&opcodes, random_id_start, NULL);
+		/*
 		ScratchArgs sc[1] = {0};
 		sc[0].t = STR;
 		sc[0].u.string = "yo";
@@ -106,8 +107,7 @@ int main(int argc, char **argv)
 			    random_blk2, NULL, 0);
 		write_block(&opcodes, "looks_say", random_blk2, random_blk,
 			    NULL, sc, 1);
-
-		free(random_id_start);
+				*/
 	}
 	jim_object_end(&opcodes);
 

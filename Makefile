@@ -1,7 +1,7 @@
 all: main
 
 main: main.c lex.yy.c y.tab.c minify.o generator.c
-	gcc -O2 -g -Wall -Wpedantic -Wextra -o main main.c log.c lex.yy.c y.tab.c minify.o generator.c
+	gcc -O2 -Wall -Wpedantic -Wextra -o main main.c log.c lex.yy.c y.tab.c minify.o generator.c
 
 minify.o: minify.json
 	ld -r -b binary minify.json -o minify.o

@@ -17,6 +17,12 @@ void yyerror(char* c);
 "print" return PRINT;
 ".." return DOTDOT;
 
+"+" return PLUS;
+"-" return MINUS;
+"*" return STAR;
+"/" return SLASH;
+
+
 [1-9]{digit}* {
 		yylval.num = atoi(yytext);
 		return INTEGER;

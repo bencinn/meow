@@ -1,22 +1,28 @@
 #ifndef AST_H
 #define AST_H
-typedef enum { CONST_N, EXPR_N, PRINT_N } NODETYPE;
+typedef enum { PRINT_N } NODETYPE;
 
-typedef enum { E_PLUS, E_MINUS, E_DIV, E_MULT, E_PRINT, E_NEXT } EXPRTYPE;
+typedef enum { E_PLUS, E_MINUS, E_DIV, E_MULT, E_INT } EXPRTYPE;
 
 struct I_NODE;
 
-typedef struct {
+typedef struct I_EXPR {
 	EXPRTYPE e;
-	struct I_NODE *left;
-	struct I_NODE *right;
+	union {
+		struct {
+			struct I_EXPR *l;
+			struct I_EXPR *r;
+		} bin;
+		char *ident; // TODO: how tf do we resolve var.
+		int integer;
+	} u;
 } EXPR;
 
-typedef struct I_NODE {
+typedef struct I_STMT {
 	NODETYPE t;
+	struct I_STMT *next;
 	union {
-		int CONST_INT;
-		EXPR *EXPRN_EXPR;
-	};
-} NODE;
+		EXPR *PRINT_E; // print use this
+	} u;
+} STMT;
 #endif

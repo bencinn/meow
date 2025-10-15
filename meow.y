@@ -6,17 +6,19 @@
 int yylex(void);
 void yyerror(char *);
 
-NODE* n_const_int(int n);
-NODE* n_expr(NODE* left, NODE* right, EXPRTYPE e);
+EXPR* n_expr_int(int n);
+EXPR* n_bexpr(EXPR* left, EXPR* right, EXPRTYPE et);
+STMT* n_print_stmt(EXPR* param);
 
-extern NODE* final;
+extern STMT* final;
 
 %}
 
 %union {
     int num;
     char* text;
-	struct I_NODE* n;
+	EXPR* expr;
+	STMT* stmt;
 }
 %token <num> INTEGER
 %token<text> IDENT
@@ -43,7 +45,8 @@ extern NODE* final;
 %left PLUS MINUS
 %left STAR SLASH
 
-%type<n> expr stmt stmt_list 
+%type<expr> expr
+%type<stmt> stmt_list stmt
 
 %%
 program:
@@ -51,45 +54,50 @@ program:
 
 stmt_list:
 		 stmt { $$ = $1; }
-		 | stmt_list stmt { $$ = n_expr($1, $2, E_NEXT); }
+		 | stmt stmt_list {
+				($1)->next = $2;
+				$$ = $1;
+		 }
 		 ;
 
 stmt:
-		PRINT expr SEMICOLON { $$ = n_expr($2, NULL, E_PRINT); }
+		PRINT expr SEMICOLON { $$ = n_print_stmt($2); }
 		;
 
 expr:
-		INTEGER { $$ = n_const_int($1); }
-		| IDENT { $$ = NULL; }
+		INTEGER { $$ = n_expr_int($1); }
+		| IDENT { yyerror("ident not implemented"); }
 		| STRING { yyerror("string not implemented"); }
-		| expr PLUS expr { $$ = n_expr($1, $3, E_PLUS); }
-		| expr MINUS expr { $$ = n_expr($1, $3, E_MINUS); }
-		| expr STAR expr { $$ = n_expr($1, $3, E_MULT); }
-		| expr SLASH expr { $$ = n_expr($1, $3, E_DIV); }
+		| expr PLUS expr { $$ = n_bexpr($1, $3, E_PLUS); }
+		| expr MINUS expr { $$ = n_bexpr($1, $3, E_MINUS); }
+		| expr STAR expr { $$ = n_bexpr($1, $3, E_MULT); }
+		| expr SLASH expr { $$ = n_bexpr($1, $3, E_DIV); }
 		| LPAREN expr RPAREN { $$ = $2; }
 		;
 
 %%
 
-NODE* n_const_int(int n) {
-		log_trace("creating CONST_INT %d", n);
-		NODE* no = malloc(sizeof(NODE));
-		no->t = CONST_N;
-		no->CONST_INT = n;
-		return no;
+EXPR* n_expr_int(int n) {
+		EXPR* e = malloc(sizeof(EXPR));
+		e->e = E_INT;
+		e->u.integer = n;
+		return e;
 }
 
-NODE* n_expr(NODE* left, NODE* right, EXPRTYPE e) {
-		log_trace("creating EXPR_N %d", e);
-		NODE* no = malloc(sizeof(NODE));
-		no->t = EXPR_N;
-		EXPR* ee = malloc(sizeof(EXPR));
-		ee->left = left;
-		ee->right = right;
-		ee->e = e;
+EXPR* n_bexpr(EXPR* left, EXPR* right, EXPRTYPE et) {
+		EXPR* e = malloc(sizeof(EXPR));
+		e->e = et;
+		e->u.bin.l = left;
+		e->u.bin.r = right;
+		return e;
+}
 
-		no->EXPRN_EXPR = ee;
-		return no;
+STMT* n_print_stmt(EXPR* param) {
+		STMT* s = malloc(sizeof(STMT));
+		s->t = PRINT_N;
+		s->u.PRINT_E = param;
+		s->next = NULL;
+		return s;
 }
 
 void yyerror(char* s) {

@@ -1,5 +1,4 @@
 #include "generator.h"
-#include "ast.h"
 #include "log.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -135,6 +134,7 @@ void write_block(Jim *j, char *opcode, char *new_id, char *prev_id,
 				case STR:
 					jim_integer(j, 10);
 					jim_string(j, sc[i].u.string);
+					break;
 				default:
 					log_error("ICE: argument type %d is "
 						  "not implemented",
